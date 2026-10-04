@@ -22,7 +22,7 @@ from schema import ChatMessage, model_dump_compat, model_validate_compat
 # The app heavily uses AgentClient to interact with the agent's FastAPI endpoints.
 
 
-APP_TITLE = "Research Assistant"
+APP_TITLE = "Multi-Agent Framework"
 APP_ICON = "🔎"
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(ROOT_DIR, ".env"))

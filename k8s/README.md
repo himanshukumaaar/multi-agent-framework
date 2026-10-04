@@ -72,8 +72,8 @@ kubectl get nodes
 Run from repo root:
 
 ```bash
-docker build -f docker/Dockerfile.service -t agent-service-toolkit/agent-service:local .
-docker build -f docker/Dockerfile.app -t agent-service-toolkit/streamlit-app:local .
+docker build -f docker/Dockerfile.service -t multi-agent-framework/agent-service:local .
+docker build -f docker/Dockerfile.app -t multi-agent-framework/streamlit-app:local .
 ```
 
 ## 3) Create Secret

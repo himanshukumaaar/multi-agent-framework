@@ -1,11 +1,10 @@
-# Agent Orchestration: LangGraph Multi-Agent Supervisor (FastAPI + Streamlit + RAG)
+# Multi-Agent Framework: LangGraph Multi-Agent Supervisor (FastAPI + Streamlit + RAG)
 
-Production-ready **LangGraph multi-agent orchestration** project with a **supervisor routing agent**, FastAPI backend, Streamlit frontend, PostgreSQL persistence, local RAG (ChromaDB), knowledge graph retrieval, and MCP tool integration.
+A comprehensive **LangGraph multi-agent orchestration** framework featuring a **supervisor routing agent**, FastAPI backend, Streamlit frontend, PostgreSQL persistence, local RAG (ChromaDB), knowledge graph retrieval, and MCP tool integration.
 
-If you are searching for a **LangGraph multi-agent orchestration example**, **supervisor agent architecture**, or a **production multi-agent AI template**, this repository is built for that exact use case.
+If you are searching for a **LangGraph multi-agent orchestration example**, **supervisor agent architecture**, or a **multi-agent AI template**, this repository is built for that exact use case.
 
-[![CI](https://github.com/Theepankumargandhi/Multi-Agent-Orchestration/actions/workflows/ci.yml/badge.svg)](https://github.com/Theepankumargandhi/Multi-Agent-Orchestration/actions/workflows/ci.yml)
-[![CD](https://github.com/Theepankumargandhi/Multi-Agent-Orchestration/actions/workflows/cd-release.yml/badge.svg)](https://github.com/Theepankumargandhi/Multi-Agent-Orchestration/actions/workflows/cd-release.yml)
+[![Pylint](https://github.com/himanshukumaaar/multi-agent-framework/actions/workflows/pylint.yml/badge.svg)](https://github.com/himanshukumaaar/multi-agent-framework/actions/workflows/pylint.yml)
 
 Keywords: `langgraph`, `multi-agent orchestration`, `supervisor agent`, `agent routing`, `fastapi`, `streamlit`, `rag`, `knowledge graph`, `mcp`, `genai`.
 
@@ -174,29 +173,11 @@ flowchart LR
 - `docs/architecture/agent_runtime_flow.md` - runtime flow explainer (human-readable)
 - `docs/architecture/agent_runtime_flow.mmd` - raw Mermaid source for the same flow
 
-## GitHub Actions CI/CD
+## GitHub Actions
 
-- `CI` workflow (`.github/workflows/ci.yml`)
-  - triggers on `push` and `pull_request` to `main`
-  - runs Python tests: `service/test_service.py` and `schema/test_schema.py`
-  - verifies both Docker images build successfully
-- `CD` workflow (`.github/workflows/cd-release.yml`)
-  - triggers on version tags (`v*`) or manual dispatch
-  - builds and publishes Docker images to Docker Hub:
-    - `<namespace>/multi-agent-orchestration-service:<version>`
-    - `<namespace>/multi-agent-orchestration-app:<version>`
-  - required repo secrets:
-    - `DOCKERHUB_USERNAME`
-    - `DOCKERHUB_TOKEN` (Docker Hub access token)
-  - optional repo variable:
-    - `DOCKERHUB_NAMESPACE` (if omitted, username is used as namespace)
-
-### Release Tag for CD
-
-```bash
-git tag v1.0.0
-git push origin v1.0.0
-```
+- `Pylint` workflow (`.github/workflows/pylint.yml`)
+  - triggers on `push`
+  - runs Python code quality checks with `pylint` across Python 3.10 and 3.11
 
 ## Endpoints
 
@@ -231,7 +212,7 @@ Access:
 - FastAPI: `http://localhost:8000`
 - Streamlit: `http://localhost:8501`
 - Prometheus: `http://localhost:9090`
-- Grafana: `http://localhost:3001` (default `admin` / `admin`)
+- Grafana: `http://localhost:3001` (default local dev credentials `admin` / `admin`)
 
 Prometheus target should show `agent_service` as `UP` at:
 
@@ -312,8 +293,8 @@ Router debug metadata written into state:
 ### 1. Clone
 
 ```bash
-git clone https://github.com/Theepankumargandhi/Agent-Orchestration.git
-cd Agent-Orchestration
+git clone https://github.com/himanshukumaaar/multi-agent-framework.git
+cd multi-agent-framework
 ```
 
 ### 2. Environment variables (`.env`)

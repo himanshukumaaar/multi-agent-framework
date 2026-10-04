@@ -690,7 +690,7 @@ async def intent_router_agent(state: AgentState, config: RunnableConfig):
     rag_hints = [
         "this project", "this repo", "repository", "codebase", "source code",
         "service endpoint", "streamlit", "fastapi", "langgraph",
-        "agent-service-toolkit", "local database", "rag",
+        "multi-agent-framework", "local database", "rag",
     ]
     relation_hints = [
         "relationship",

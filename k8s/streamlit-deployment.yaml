@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: streamlit-app
-          image: agent-service-toolkit/streamlit-app:local
+          image: multi-agent-framework/streamlit-app:local
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8501

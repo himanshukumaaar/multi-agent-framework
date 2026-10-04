@@ -50,7 +50,7 @@ class AuthRegisterInput(BaseModel):
     """Registration payload for per-user auth."""
     user_id: str = Field(
         description="Unique user identifier used for login.",
-        examples=["theepan"],
+        examples=["himanshu"],
     )
     password: str = Field(
         description="User password. Stored as a secure hash on the server.",
@@ -62,7 +62,7 @@ class AuthLoginInput(BaseModel):
     """Login payload for per-user auth."""
     user_id: str = Field(
         description="User identifier.",
-        examples=["theepan"],
+        examples=["himanshu"],
     )
     password: str = Field(
         description="User password.",
@@ -82,7 +82,7 @@ class AuthToken(BaseModel):
     )
     user_id: str = Field(
         description="Authenticated user identifier.",
-        examples=["theepan"],
+        examples=["himanshu"],
     )
     expires_in: int = Field(
         description="Token lifetime in seconds.",

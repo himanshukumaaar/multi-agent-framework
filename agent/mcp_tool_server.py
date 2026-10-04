@@ -23,9 +23,9 @@ perform_web_search = getattr(_tools_module, "perform_web_search")
 
 
 server = FastMCP(
-    name="agent-service-toolkit-tools",
+    name="multi-agent-framework-tools",
     instructions=(
-        "MCP tool server for agent-service-toolkit. "
+        "MCP tool server for multi-agent-framework. "
         "Provides web_search and calculator tools."
     ),
 )
