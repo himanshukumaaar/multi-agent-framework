@@ -13,7 +13,6 @@ from duckduckgo_search import DDGS
 
 web_search = DuckDuckGoSearchResults()
 
-# Kinda busted since it doesn't return links
 arxiv_search = ArxivQueryRun()
 
 _QUERY_STOPWORDS = {
