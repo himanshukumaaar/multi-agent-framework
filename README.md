@@ -35,7 +35,7 @@ Keywords: `langgraph`, `multi-agent orchestration`, `supervisor agent`, `agent r
 - HITL decision audit trail persisted per user/thread (`hitl_events`)
 - Monitoring stack with Prometheus + Grafana
 - Dual-layer persistence:
-  - LangGraph PostgreSQL checkpointer (graph state continuity)
+  - LangGraph SQLite checkpointer (graph state continuity)
   - Conversation Store (PostgreSQL with SQLite fallback)
 - Per-user conversation history in UI (load latest thread + switch from sidebar)
 - Evaluation agent (heuristic quality audit)
@@ -72,7 +72,7 @@ flowchart TD
     API --> HMAP[HITL mapper for plain approve or reject]
     HMAP --> CFG[Build graph config model + thread_id]
     CFG --> LG[LangGraph research_assistant]
-    CFG --> CHK[Postgres checkpoints]
+    CFG --> CHK[SQLite checkpoints]
 
     LG --> SA[safety_agent]
     SA --> IR[intent_router_agent]
@@ -177,7 +177,7 @@ flowchart LR
 
 - `Pylint` workflow (`.github/workflows/pylint.yml`)
   - triggers on `push`
-  - runs Python code quality checks with `pylint` across Python 3.10 and 3.11
+  - runs Python code quality checks with `pylint` across Python 3.10, 3.11, and 3.12.3
 
 ## Endpoints
 
@@ -185,12 +185,18 @@ flowchart LR
 - `POST /auth/login` - login user and receive access token
 - `POST /invoke` - non-streaming chat response
 - `POST /stream` - streaming chat response
-- `POST /web_search/preview` - optional/manual preview endpoint for external clients (Streamlit default flow does not require this)
+- `POST /web_search/preview` - optional/manual preview endpoint for external clients
 - `POST /hitl/web_decision` - optional/manual HITL audit event record endpoint
 - `GET /hitl/web_decisions` - list authenticated user's HITL audit records
 - `GET /store/threads` - list authenticated user's recent conversation threads
 - `GET /store/{thread_id}` - inspect persisted conversation records
 - `POST /feedback` - user feedback/rating
+- `GET /observability/traces` - list recorded execution traces
+- `GET /observability/traces/{trace_id}` - inspect detailed execution trace
+- `GET /observability/metrics` - aggregate latency, token, cost, and evaluation metrics
+- `GET /observability/evaluations` - response quality evaluation records
+- `GET /observability/agents` - per-agent execution performance metrics
+- `GET /observability/tools` - MCP tool telemetry and latency metrics
 - `GET /healthz` - liveness probe endpoint
 - `GET /readyz` - readiness probe endpoint
 - `GET /metrics` - Prometheus scrape endpoint
@@ -201,9 +207,10 @@ When `ENABLE_USER_AUTH=true`, all non-auth endpoints require `Authorization: Bea
 
 ### Docker Compose (Local)
 
-Bring up full stack:
+Note: Docker Compose requires a `.env` file (`compose.yaml` uses `env_file: .env`). You can create one from `.env.example`:
 
 ```bash
+cp .env.example .env
 docker compose up -d --build
 ```
 
@@ -245,24 +252,29 @@ Beginner-friendly Kubernetes manifests are available in `k8s/` with step-by-step
 
 ### Dual-layer persistence
 
-1. **Checkpointer (LangGraph, PostgreSQL)**
-- Stores graph execution/checkpoint state by `thread_id`
+1. **Checkpointer (LangGraph, SQLite)**
+- Stores graph execution/checkpoint state by `thread_id` using `AsyncSqliteSaver` (`CHECKPOINT_DB_PATH`)
 - Used for workflow state continuity/resume
 
 2. **Conversation Store (PostgreSQL, SQLite fallback)**
-- Stores durable human/AI messages + metadata
+- Stores durable human/AI messages + metadata (`POSTGRES_STORE_URI` / `STORE_DB_PATH`)
 - Used for history/debugging/audit (`/store/threads`, `/store/{thread_id}`)
 
-### PostgreSQL tables you will see
+### Database tables you will see
 
-- Checkpointer tables:
+- **SQLite Checkpointer tables** (`data/checkpoints/checkpoints.db`):
   - `checkpoints`
-  - `checkpoint_writes`
-  - `checkpoint_blobs`
-- Conversation store table:
+  - `writes`
+
+- **Conversation & Observability Store tables** (PostgreSQL / SQLite):
   - `conversation_store`
   - `users`
   - `hitl_events`
+  - `llm_calls`
+  - `retrieval_events`
+  - `evaluation_results`
+  - `mcp_tool_calls`
+  - `agent_executions`
 
 ## Routing Summary (Supervisor Logic)
 
@@ -305,13 +317,11 @@ Set at least the following (adjust values to your machine):
 OPENAI_API_KEY=...
 GROQ_API_KEY=...
 
-# FastAPI service port (your current setup uses 8080)
-PORT=8080
-API_BASE_URL=http://localhost:8080
+# FastAPI service port (default is 8000)
+PORT=8000
+API_BASE_URL=http://localhost:8000
 
-# LangGraph checkpointer (PostgreSQL)
-POSTGRES_CHECKPOINT_URI=postgresql://postgres:password@localhost:5432/agentdb
-CHECKPOINT_FALLBACK_SQLITE=true
+# LangGraph checkpointer (SQLite)
 CHECKPOINT_DB_PATH=data/checkpoints/checkpoints.db
 
 # Conversation Store (defaults to checkpoint URI if omitted)
@@ -495,8 +505,8 @@ This improves local retrieval precision for paraphrases and keyword-heavy querie
 Open in browser (replace with your sidebar thread ID and correct backend port):
 
 ```text
-http://localhost:8080/store/threads?limit=30
-http://localhost:8080/store/<thread_id>?limit=50
+http://localhost:8000/store/threads?limit=30
+http://localhost:8000/store/<thread_id>?limit=50
 ```
 
 ### PostgreSQL (pgAdmin)

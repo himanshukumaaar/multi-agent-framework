@@ -21,6 +21,9 @@ services:
         - path: service/
           action: sync+restart
           target: /app/service/
+        - path: observability/
+          action: sync+restart
+          target: /app/observability/
 
   streamlit_app:
     build:

@@ -12,7 +12,7 @@ flowchart TD
     API --> HMAP[HITL mapper for plain approve or reject]
     HMAP --> CFG[Build graph config model + thread_id]
     CFG --> LG[LangGraph research_assistant]
-    CFG --> CHK[Postgres checkpoints]
+    CFG --> CHK[SQLite checkpoints]
 
     LG --> SA[safety_agent]
     SA --> IR[intent_router_agent]

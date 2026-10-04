@@ -210,8 +210,10 @@ def _update_hitl_cache_and_audit(app: FastAPI, user_id: str | None, thread_id: s
 def _store_safely(app: FastAPI, method_name: str, *args, **kwargs):
     store = getattr(app.state, "store", None)
     if store and hasattr(store, method_name):
-        try: asyncio.to_thread(getattr(store, method_name), *args, **kwargs)
-        except Exception as e: print(f"[service] store {method_name} failed: {e}")
+        try:
+            getattr(store, method_name)(*args, **kwargs)
+        except Exception as e:
+            print(f"[service] store {method_name} failed: {e}")
 
 # --- Application Lifespan & Middlewares ---
 @asynccontextmanager

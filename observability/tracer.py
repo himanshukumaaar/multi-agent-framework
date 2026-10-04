@@ -189,6 +189,41 @@ class ObservabilityTracer:
             print(f"[observability] Error recording RAG event: {e}")
 
     @staticmethod
+    def record_evaluation_result(
+        trace_id: str,
+        overall_score: int,
+        relevance_score: int,
+        groundedness_score: int,
+        completeness_score: int,
+        safety_score: int,
+        citation_quality: int,
+        evaluator_type: str,
+        evaluation_latency_ms: float,
+        evaluation_reason: str
+    ) -> None:
+        # Prometheus evaluation metrics are already recorded by the evaluator;
+        # this only persists the structured result for /observability/evaluations.
+        if not config.enabled:
+            return
+        try:
+            if config.persistence_enabled and _persistence_store:
+                if hasattr(_persistence_store, "save_evaluation_result"):
+                    _persistence_store.save_evaluation_result(
+                        trace_id=trace_id,
+                        overall_score=overall_score,
+                        relevance_score=relevance_score,
+                        groundedness_score=groundedness_score,
+                        completeness_score=completeness_score,
+                        safety_score=safety_score,
+                        citation_quality=citation_quality,
+                        evaluator_type=evaluator_type,
+                        evaluation_latency_ms=evaluation_latency_ms,
+                        evaluation_reason=evaluation_reason
+                    )
+        except Exception as e:
+            print(f"[observability] Error recording evaluation result: {e}")
+
+    @staticmethod
     def record_mcp_tool_call(
         trace_id: str,
         tool_name: str,
